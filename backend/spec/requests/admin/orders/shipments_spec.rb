@@ -22,4 +22,30 @@ describe "Shipments" do
       order.reload.shipment_state.should == "shipped"
     end
   end
+
+  context "moving variants between shipments", js: true do
+    let!(:la) { create(:stock_location, name: "LA") }
+    before(:each) do
+      create(:stock_location, name: "LA")
+      visit spree.admin_path
+      click_link "Orders"
+      within_row(1) do
+        click_link "R100"
+      end
+    end
+
+    it "can move a variant to a new and to an existing shipment" do
+      order.shipments.count.should == 1
+
+      within_row(1) { click_icon 'resize-horizontal' }
+      targetted_select2 'LA', from: '#s2id_item_stock_location'
+      click_icon :ok
+      page.should have_selector("table.stock-contents:eq(2)")
+
+      within_row(2) { click_icon 'resize-horizontal' }
+      targetted_select2 "LA(#{order.reload.shipments.last.number})", from: '#s2id_item_stock_location'
+      click_icon :ok
+      page.should have_selector("table.stock-contents:eq(2)")
+    end
+  end
 end
