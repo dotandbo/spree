@@ -35,7 +35,7 @@ module Spree
       event :ready do
         transition from: :pending, to: :ready, if: lambda { |shipment|
           # Fix for #2040
-          shipment.determine_state(shipment.order) == :ready
+          shipment.determine_state(shipment.order) == 'ready'
         }
       end
 
@@ -273,12 +273,12 @@ module Spree
       def ensure_correct_adjustment
         if adjustment
           adjustment.originator = shipping_method
-          adjustment.label = shipping_method.name
+          adjustment.label = shipping_method.adjustment_label
           adjustment.amount = selected_shipping_rate.cost if adjustment.open?
           adjustment.save!
           adjustment.reload
         elsif selected_shipping_rate_id
-          shipping_method.create_adjustment shipping_method.name, order, self, true, "open"
+          shipping_method.create_adjustment shipping_method.adjustment_label, order, self, true, "open"
           reload #ensure adjustment is present on later saves
         end
       end
