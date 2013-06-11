@@ -10,7 +10,6 @@ module Spree
         end
 
         @products = @products.page(params[:page]).per(params[:per_page])
-
         respond_with(@products)
       end
 

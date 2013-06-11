@@ -1,5 +1,5 @@
 object @order
-attributes *order_attributes
+extends "spree/api/orders/order"
 
 if lookup_context.find_all("spree/api/orders/#{@order.state}").present?
   extends "spree/api/orders/#{@order.state}"
