@@ -38,7 +38,6 @@ module Spree
     preference :check_for_spree_alerts, :boolean, default: true
     preference :checkout_zone, :string, default: nil # replace with the name of a zone if you would like to limit the countries
     preference :company, :boolean, default: false # Request company field for billing and shipping addr
-    preference :create_inventory_units, :boolean, default: true # should only be false when track_inventory_levels is false, also disables RMA's
     preference :currency, :string, default: "USD"
     preference :currency_decimal_mark, :string, default: "."
     preference :currency_symbol_position, :string, default: "before"
@@ -69,7 +68,7 @@ module Spree
     preference :site_name, :string, default: 'Spree Demo Site'
     preference :site_url, :string, default: 'demo.spreecommerce.com'
     preference :tax_using_ship_address, :boolean, default: true
-    preference :track_inventory_levels, :boolean, default: true # will not track on_hand values for variants /products
+    preference :track_inventory_levels, :boolean, default: true # Determines whether to track on_hand values for variants / products.
 
     # Preferences related to image settings
     preference :attachment_default_url, :string, default: '/spree/products/:id/:style/:basename.:extension'

@@ -16,7 +16,7 @@ module Spree
     after_save :ensure_correct_adjustment, :update_order
 
     attr_accessor :special_instructions
-    attr_accessible :order, :special_instructions, :stock_location_id,
+    attr_accessible :order, :special_instructions, :stock_location_id, :number,
                     :tracking, :address, :inventory_units, :selected_shipping_rate_id
 
     accepts_nested_attributes_for :address
@@ -158,7 +158,7 @@ module Spree
     end
 
     def manifest
-      inventory_units.group_by(&:variant).map do |variant, units|
+      inventory_units.includes(:variant).group_by(&:variant).map do |variant, units|
         states = {}
         units.group_by(&:state).each { |state, iu| states[state] = iu.count }
         OpenStruct.new(variant: variant, quantity: units.length, states: states)

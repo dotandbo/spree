@@ -51,6 +51,8 @@ describe "Order Details", js: true do
           click_icon :trash
         end
 
+        # Click "ok" on confirmation dialog
+        page.driver.browser.switch_to.alert.accept
         page.should_not have_content("spree t-shirt")
       end
 
@@ -72,6 +74,7 @@ describe "Order Details", js: true do
         end
         select2 "Default", :from => "Shipping Method"
         click_icon :ok
+        sleep(1) # wait for API request to finish
 
         page.should have_content("Default")
       end
@@ -204,6 +207,7 @@ describe "Order Details", js: true do
       end
       select2 "Default", :from => "Shipping Method"
       click_icon :ok
+      sleep 1
 
       page.should have_content("Default")
     end
