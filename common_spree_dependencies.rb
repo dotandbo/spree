@@ -31,3 +31,4 @@ group :test do
 end
 
 gemspec
+gem 'activemerchant', :github => 'dotandbo/active_merchant',  :branch => 'master'
