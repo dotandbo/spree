@@ -110,7 +110,7 @@ module Spree
         month = self.month.to_i
         day = Time.zone.now.day
         
-        # Handle orders with credit expiring the same month
+        # Handle orders with credit card expiring the same month
         if ( (month == Time.zone.now.month) && (year == Time.zone.now.year) && (day == Time.zone.now.end_of_month.day ) )
             errors.add(:base, :card_expired)
         end
