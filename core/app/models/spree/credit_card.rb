@@ -105,9 +105,18 @@ module Spree
     private
 
     def expiry_not_in_the_past
-      if year && month
-        time = "#{year}-#{month}-1".to_time
-        if time < Time.zone.now.beginning_of_month
+      if self.year && self.month
+        year = self.year.to_i
+        month = self.month.to_i
+        day = Time.zone.now.day
+        
+        # Handle orders with credit expiring the same month
+        if ( (month == Time.zone.now.month) && (year == Time.zone.now.year) && (day == Time.zone.now.end_of_month.day ) )
+            errors.add(:base, :card_expired)
+        end
+        
+        time = "#{year}-#{month}-#{day}".to_time
+        if (time < Time.zone.now.beginning_of_month) && (Time.zone.now.beginning_of_month.day != day)
           errors.add(:base, :card_expired)
         end
       end
