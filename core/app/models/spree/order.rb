@@ -469,7 +469,7 @@ module Spree
           next_state:     self.send(state),
           name:           name,
           user_id:        self.user_id
-        )
+        ) unless old_state == self.send(state)
       end
     end
 
