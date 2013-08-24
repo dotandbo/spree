@@ -50,7 +50,7 @@ module Spree
             # See https://github.com/spree/spree_active_shipping/pull/96 et. al
             calculable = calculable.to_package if calculable.is_a?(Spree::Shipment)
             new_amount = compute_amount(calculable);
-            adjustment.update_attribute_without_callbacks(:amount, amount) unless new_amount == adjustment.amount
+            adjustment.update_attribute_without_callbacks(:amount, new_amount) unless ( new_amount * 100 ).round == ( adjustment.amount * 100 ).round  # Round to cents. 
           end
 
           # Calculate the amount to be used when creating an adjustment
