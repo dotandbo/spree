@@ -47,22 +47,18 @@ module Spree
     belongs_to :ship_address, foreign_key: :ship_address_id, class_name: 'Spree::Address'
     alias_attribute :shipping_address, :ship_address
 
+    has_many :adjustments, as: :adjustable, dependent: :destroy, order: 'created_at ASC'
+    has_many :line_item_adjustments, through: :line_items, source: :adjustments
+    has_many :line_items, dependent: :destroy, order: 'created_at ASC'
+    has_many :payments, dependent: :destroy
+    has_many :return_authorizations, dependent: :destroy
     has_many :state_changes, as: :stateful
-    has_many :line_items, dependent: :destroy, order: "#{Spree::LineItem.table_name}.created_at ASC"
-    has_many :payments, dependent: :destroy, :class_name => "Spree::Payment"
 
     has_many :shipments, dependent: :destroy, :class_name => "Shipment" do
       def states
         pluck(:state).uniq
       end
     end
-
-    has_many :return_authorizations, dependent: :destroy
-    has_many :adjustments, 
-      as: :adjustable,
-      dependent: :destroy,
-      order: "#{Spree::Adjustment.table_name}.created_at ASC",
-      inverse_of: :source
 
     accepts_nested_attributes_for :line_items
     accepts_nested_attributes_for :bill_address
@@ -202,24 +198,24 @@ module Spree
       return tax_zone != Zone.default_tax
     end
 
-    # Array of adjustments that are inclusive in the variant price. Useful for when
-    # prices include tax (ex. VAT) and you need to record the tax amount separately.
     def price_adjustments
-      adjustments = []
-
-      line_items.each { |line_item| adjustments.concat line_item.adjustments }
-
-      adjustments
+      ActiveSupport::Deprecation.warn("Order#price_adjustments will be deprecated in Spree 2.1, please use Order#line_item_adjustments instead.")
+      self.line_item_adjustments
     end
 
-    # Array of totals grouped by Adjustment#label. Useful for displaying price
+    # Array of totals grouped by Adjustment#label. Useful for displaying line item
     # adjustments on an invoice. For example, you can display tax breakout for
     # cases where tax is included in price.
-    def price_adjustment_totals
-      Hash[price_adjustments.group_by(&:label).map do |label, adjustments|
+    def line_item_adjustment_totals
+      Hash[self.line_item_adjustments.eligible.group_by(&:label).map do |label, adjustments|
         total = adjustments.sum(&:amount)
         [label, Spree::Money.new(total, { currency: currency })]
       end]
+    end
+
+    def price_adjustment_totals
+      ActiveSupport::Deprecation.warn("Order#price_adjustment_totals will be deprecated in Spree 2.1, please use Order#line_item_adjustment_totals instead.")
+      self.line_item_adjustment_totals
     end
 
     def updater
@@ -279,10 +275,11 @@ module Spree
     def associate_user!(user)
       self.user = user
       self.email = user.email
+      self.created_by = user if self.created_by.blank?
 
       if persisted?
         # immediately persist the changes we just made, but don't use save since we might have an invalid address associated
-        self.class.unscoped.where(id: id).update_all(email: user.email, user_id: user.id)
+        self.class.unscoped.where(id: id).update_all(email: user.email, user_id: user.id, created_by_id: self.created_by_id)
       end
     end
 
@@ -487,11 +484,9 @@ module Spree
       adjustments.destroy_all
     end
 
-    # destroy any previous adjustments.
-    # Adjustments will be recalculated during order update.
     def clear_adjustments!
-      adjustments.tax.each(&:destroy)
-      price_adjustments.each(&:destroy)
+      self.adjustments.destroy_all
+      self.line_item_adjustments.destroy_all
     end
 
     def has_step?(step)
@@ -522,7 +517,7 @@ module Spree
     # Receives an adjustment +originator+ (here a PromotionAction object) and tells
     # if the order has adjustments from that already
     def promotion_credit_exists?(originator)
-      !! adjustments.promotion.reload.detect { |credit| credit.originator.id == originator.id }
+      !! adjustments.includes(:originator).promotion.reload.detect { |credit| credit.originator.id == originator.id }
     end
 
     def promo_total
@@ -542,6 +537,18 @@ module Spree
       end
 
       shipments
+    end
+
+    # Clean shipments and make order back to address state
+    #
+    # At some point the might need to force the order to transition from address
+    # to delivery again so that proper updated shipments are created.
+    # e.g. customer goes back from payment step and changes order items 
+    def ensure_updated_shipments
+      if shipments.any?
+        self.shipments.destroy_all
+        self.update_column(:state, "address")
+      end
     end
 
     private

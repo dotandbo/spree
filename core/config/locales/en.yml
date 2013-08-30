@@ -63,6 +63,7 @@ en:
         zipcode: Shipping address zipcode
       spree/payment:
         amount: Amount
+        one: "Payment"
       spree/payment_method:
         name: Name
       spree/product:
@@ -151,6 +152,9 @@ en:
       spree/product:
         one: Product
         other: Products
+      spree/promotion:
+        one: Promotion
+        other: Promotions
       spree/property:
         one: Property
         other: Properties
@@ -172,6 +176,9 @@ en:
       spree/state:
         one: State
         other: States
+      spree/stock_location:
+        one: Stock Location
+        other: Stock Locations
       spree/tax_category:
         one: Tax Category
         other: Tax Categories
@@ -360,6 +367,7 @@ en:
     back_to_users_list: Back To Users List
     back_to_zones_list: Back To Zones List
     backorderable: Backorderable
+    backorders_allowed: backorders allowed
     balance_due: Balance Due
     bill_address: Bill Address
     billing: Billing
@@ -454,6 +462,7 @@ en:
     date: Date
     date_completed: Date Completed
     date_picker:
+      first_day: 0
       format: ! '%Y/%m/%d'
       js_format: yy/mm/dd
     date_range: Date Range
@@ -575,6 +584,7 @@ en:
     insufficient_stock: Insufficient stock available, only %{on_hand} remaining
     intercept_email_address: Intercept Email Address
     intercept_email_instructions: Override email recipient and replace with this address.
+    internal_name: Internal Name
     invalid_payment_provider: Invalid payment provider.
     invalid_promotion_action: Invalid promotion action.
     invalid_promotion_rule: Invalid promotion rule.
@@ -590,7 +600,7 @@ en:
       operators:
         gt: greater than
         gte: greater than or equal to
-    items_cannot_be_shipped: We are unable to ship the selected items to your shipping address. Please choose another shipping address.
+    items_cannot_be_shipped: We are unable to calculate shipping rates for the selected items.
     jirafe: Jirafe
     landing_page_rule:
       path: Path
@@ -674,6 +684,7 @@ en:
     no_promotions_found: No promotions found
     no_results: No results
     no_rules_added: No rules added
+    no_resource_found: ! 'No %{resource} found'
     no_shipping_methods_found: No shipping methods found
     no_trackers_found: No Trackers Found
     no_stock_locations_found: No stock locations found

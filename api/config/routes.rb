@@ -18,6 +18,7 @@ Spree::Core::Engine.routes.draw do
     resources :checkouts do
       member do
         put :next
+        put :advance
       end
     end
 
@@ -28,6 +29,8 @@ Spree::Core::Engine.routes.draw do
     end
 
     resources :orders do
+      resources :addresses, :only => [:show, :update]
+
       resources :return_authorizations do
         member do
           put :add
@@ -64,7 +67,6 @@ Spree::Core::Engine.routes.draw do
     resources :zones
     resources :countries, :only => [:index, :show]
     resources :states,    :only => [:index, :show]
-    resources :addresses, :only => [:show, :update]
 
     resources :taxonomies do
       member do

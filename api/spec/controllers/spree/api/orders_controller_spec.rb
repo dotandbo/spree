@@ -79,7 +79,7 @@ module Spree
       # Regression test for #3404
       it "can specify additional parameters for a line item" do
         variant = create(:variant)
-        Order.should_receive(:create).and_return(order = Spree::Order.new)
+        Order.should_receive(:create!).and_return(order = Spree::Order.new)
         order.stub(:associate_user!)
         order.stub_chain(:contents, :add).and_return(line_item = double('LineItem'))
         line_item.should_receive(:update_attributes).with("special" => true)
@@ -96,7 +96,7 @@ module Spree
       # Regression test for #3404
       it "does not update line item needlessly" do
         variant = create(:variant)
-        Order.should_receive(:create).and_return(order = Spree::Order.new)
+        Order.should_receive(:create!).and_return(order = Spree::Order.new)
         order.stub(:associate_user!)
         order.stub_chain(:contents, :add).and_return(line_item = double('LineItem'))
         line_item.should_not_receive(:update_attributes)
@@ -156,13 +156,26 @@ module Spree
       let!(:payment_method) { create(:payment_method) }
 
       it "can add line items" do
-        api_put :update, :id => order.to_param, :order => { :line_items => [{:variant_id => create(:variant).id, :quantity => 2}] }
+        api_put :update, :id => order.to_param, :order => {
+          :line_items_attributes => [{:variant_id => create(:variant).id, :quantity => 2}] }
 
         response.status.should == 200
         json_response['item_total'].to_f.should_not == order.item_total.to_f
         json_response['line_items'].count.should == 2
         json_response['line_items'].first['quantity'].should == 1
         json_response['line_items'].last['quantity'].should == 2
+      end
+
+      it "updates quantities of existing line items" do
+        api_put :update, :id => order.to_param, :order => {
+          :line_items => {
+            line_item.id => { :quantity => 10 }
+          }
+        }
+
+        response.status.should == 200
+        json_response['line_items'].count.should == 1
+        json_response['line_items'].first['quantity'].should == 10
       end
 
       it "can add billing address" do
@@ -199,6 +212,20 @@ module Spree
         json_response['error'].should_not be_nil
         json_response['errors'].should_not be_nil
         json_response['errors']['ship_address.firstname'].first.should eq "can't be blank"
+      end
+
+      context "order has shipments" do
+        before { order.create_proposed_shipments }
+
+        it "clears out all existing shipments on line item udpate" do
+          previous_shipments = order.shipments
+          api_put :update, :id => order.to_param, :order => {
+            :line_items => {
+              line_item.id => { :quantity => 10 }
+            }
+          }
+          expect(order.reload.shipments).to be_empty
+        end
       end
 
       context "with a line item" do

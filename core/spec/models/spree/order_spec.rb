@@ -55,7 +55,7 @@ describe Spree::Order do
 
   context "#associate_user!" do
     it "should associate a user with a persisted order" do
-      order = FactoryGirl.create(:order_with_line_items)
+      order = FactoryGirl.create(:order_with_line_items, created_by: nil)
       user = FactoryGirl.create(:user)
 
       order.user = nil
@@ -63,12 +63,34 @@ describe Spree::Order do
       order.associate_user!(user)
       order.user.should == user
       order.email.should == user.email
+      order.created_by.should == user
 
       # verify that the changes we made were persisted
       order.reload
       order.user.should == user
       order.email.should == user.email
+      order.created_by.should == user
     end
+
+    it "should not overwrite the created_by if it already is set" do
+      creator = create(:user)
+      order = FactoryGirl.create(:order_with_line_items, created_by: creator)
+      user = FactoryGirl.create(:user)
+
+      order.user = nil
+      order.email = nil
+      order.associate_user!(user)
+      order.user.should == user
+      order.email.should == user.email
+      order.created_by.should == creator
+
+      # verify that the changes we made were persisted
+      order.reload
+      order.user.should == user
+      order.email.should == user.email
+      order.created_by.should == creator
+    end
+
 
     it "should associate a user with a non-persisted order" do
       order = Spree::Order.new
@@ -521,7 +543,7 @@ describe Spree::Order do
     let(:originator) { double("Originator", id: 1) }
     let(:adjustment) { double("Adjustment", originator: originator) }
 
-    before { order.stub_chain(:adjustments, :promotion, reload: [adjustment]) }
+    before { order.stub_chain(:adjustments, :includes, :promotion, reload: [adjustment]) }
 
     context "order has an adjustment from given promo action" do
       it { expect(order.promotion_credit_exists? originator).to be_true }
@@ -569,5 +591,18 @@ describe Spree::Order do
       order.finalize!
     end
   end
-end
 
+  context "ensure shipments will be updated" do
+    before { Spree::Shipment.create!(order: order) }
+
+    it "destroys current shipments" do
+      order.ensure_updated_shipments
+      expect(order.shipments).to be_empty
+    end
+
+    it "puts order back in address state" do
+      order.ensure_updated_shipments
+      expect(order.state).to eql "address"
+    end
+  end
+end
