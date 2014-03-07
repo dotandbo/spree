@@ -16,7 +16,7 @@ module Spree
 
       def update
         authorize! :read, order
-        @line_item = order.line_items.find(params[:id])
+        @line_item = find_line_item
         if @line_item.update_attributes(params[:line_item], :as => :api)
           @order.ensure_updated_shipments
           respond_with(@line_item, :default_template => :show)
@@ -27,7 +27,7 @@ module Spree
 
       def destroy
         authorize! :read, order
-        @line_item = order.line_items.find(params[:id])
+        @line_item = find_line_item
         @line_item.destroy
         respond_with(@line_item, :status => 204)
       end
@@ -36,6 +36,11 @@ module Spree
 
       def order
         @order ||= Order.find_by_number!(params[:order_id])
+      end
+
+      def find_line_item
+        order.line_items.detect{|line_item| line_item.id == params[:id].to_i} ||
+          raise(ActiveRecord::RecordNotFound, "Could not find line item with id=#{params[:id]}")
       end
     end
   end
