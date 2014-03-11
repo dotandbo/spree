@@ -33,6 +33,7 @@ module Spree
         payment_state: order.payment_state,
         shipment_state: order.shipment_state,
         item_total: order.item_total,
+        tax_total: order.tax_total,
         adjustment_total: order.adjustment_total,
         payment_total: order.payment_total,
         total: order.total
