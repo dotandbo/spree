@@ -37,6 +37,7 @@ module Spree
 
     context "as the order owner" do
       before do
+        current_api_user.stub admin?: false
         controller.stub :try_spree_current_user => current_api_user
         Order.any_instance.stub :user => current_api_user
       end
@@ -99,7 +100,7 @@ module Spree
         context "order is completed" do
           before do
             order.stub completed?: true
-            Order.stub find_by!: order
+            Order.stub_chain(:includes, :find_by!) { order }
           end
 
           it "doesn't destroy shipments or restart checkout flow" do

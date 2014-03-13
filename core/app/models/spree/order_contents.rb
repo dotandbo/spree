@@ -37,9 +37,7 @@ module Spree
         line_item.target_shipment = shipment
         if currency
           line_item.currency = currency unless currency.nil?
-          line_item.price    = variant.price_in(currency).amount
         else
-          line_item.price    = variant.price
         end
       end
 
