@@ -77,6 +77,8 @@ module Spree
       end
 
       def authenticate_user
+        @current_api_user = nil if requires_authentication? && api_key.present?
+
         unless @current_api_user
           if order_token.blank? && (requires_authentication? || api_key.present?)
             unless @current_api_user = Spree.user_class.find_by_spree_api_key(api_key.to_s)
