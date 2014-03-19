@@ -27,7 +27,8 @@ module Spree
 
         def permitted_order_attributes
           permitted_checkout_attributes + [
-            :line_items_attributes => permitted_line_item_attributes
+            :gift_message,
+            {:line_items_attributes => permitted_line_item_attributes}
           ]
         end
 
