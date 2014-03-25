@@ -18,7 +18,7 @@ module Spree
       message: Spree.t('validation.must_be_int')
     }
     validates :price, numericality: true
-    validates_with Stock::AvailabilityValidator
+    validates_with Stock::AvailabilityValidator, unless: ->{ order.can_ship? }
 
     after_save :update_inventory
     after_save :update_order
