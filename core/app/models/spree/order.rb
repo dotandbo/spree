@@ -215,12 +215,12 @@ module Spree
     def update!
       updater.update
     end
-    add_method_tracer :update!, deduct_call_time_from_parent: true
+    add_method_tracer :update!, nil, deduct_call_time_from_parent: true
 
     def update_totals
       updater.update_totals
     end
-    add_method_tracer :update_totals, deduct_call_time_from_parent: true
+    add_method_tracer :update_totals, nil, deduct_call_time_from_parent: true
 
     def clone_billing_address
       if bill_address and self.ship_address.nil?
