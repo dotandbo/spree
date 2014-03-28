@@ -3,6 +3,7 @@ require 'spree/order/checkout'
 
 module Spree
   class Order < ActiveRecord::Base
+    include ::NewRelic::Agent::MethodTracer
     include Checkout
 
     checkout_flow do
@@ -214,10 +215,12 @@ module Spree
     def update!
       updater.update
     end
+    add_method_tracer :update!, deduct_call_time_from_parent: true
 
     def update_totals
       updater.update_totals
     end
+    add_method_tracer :update_totals, deduct_call_time_from_parent: true
 
     def clone_billing_address
       if bill_address and self.ship_address.nil?
