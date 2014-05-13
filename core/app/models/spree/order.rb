@@ -306,11 +306,7 @@ module Spree
     end
 
     def outstanding_balance
-      if self.state == 'canceled' && self.payments.present? && self.payments.completed.size > 0
-        -1 * payment_total
-      else
-        total - payment_total
-      end
+      (canceled? ? 0 : total) - payment_total
     end
 
     def outstanding_balance?
