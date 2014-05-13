@@ -96,7 +96,7 @@ module Spree
     # payment be settled first which generally happens within 12-24 hours of the transaction.
     def can_credit?(payment)
       return false unless payment.completed?
-      return false unless payment.order.payment_state == 'credit_owed'
+      return false unless payment.order.payment_state == 'credit_owed' || payment.order.canceled?
       payment.credit_allowed > 0
     end
 
