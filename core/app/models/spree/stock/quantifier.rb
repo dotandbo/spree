@@ -24,6 +24,14 @@ module Spree
         total_on_hand >= required || backorderable?
       end
 
+      private
+
+      # return variant when passed either variant object or variant id
+      def resolve_variant_id(variant)
+        variant = Spree::Variant.with_deleted.find_by_id(variant) unless variant.respond_to?(:should_track_inventory?)
+        variant
+      end
+
     end
   end
 end
