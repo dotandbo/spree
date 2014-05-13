@@ -292,7 +292,7 @@ module Spree
     end
 
     def outstanding_balance
-      total - payment_total
+      (canceled? ? 0 : total) - payment_total
     end
 
     def outstanding_balance?
