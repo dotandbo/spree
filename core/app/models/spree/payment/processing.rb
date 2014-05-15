@@ -185,6 +185,10 @@ module Spree
       def gateway_error(error)
         if error.is_a? ActiveMerchant::Billing::Response
           text = error.params['message'] || error.params['response_reason_text'] || error.message
+          if payment_method.is_a?(Spree::Gateway::AuthorizeNetCim)
+            rc = error.params['direct_response']['response_reason_code'].to_i
+            text += ' Incorrect security code.' if rc == 64 || rc == 44 || rc == 45
+          end
         elsif error.is_a? ActiveMerchant::ConnectionError
           text = Spree.t(:unable_to_connect_to_gateway)
         else
