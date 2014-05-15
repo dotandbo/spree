@@ -62,7 +62,7 @@ module Spree
       end
 
       def shipping_categories
-        contents.map { |item| item.variant.shipping_category }.compact.uniq
+        contents.map { |item| item.variant.shipping_category unless item.variant.nil? }.compact.uniq
       end
 
       def shipping_methods
