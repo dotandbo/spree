@@ -84,7 +84,7 @@ module Spree
           credit_amount ||= credit_allowed >= order.outstanding_balance.abs ? order.outstanding_balance.abs : credit_allowed.abs
           credit_amount = credit_amount.to_f
           credit_cents = Spree::Money.new(credit_amount, currency: currency).money.cents
-          binding.pry
+          
           if payment_method.payment_profiles_supported?
             response = payment_method.credit(credit_cents, source || payment_source, response_code, gateway_options)
           else
