@@ -186,7 +186,7 @@ module Spree
         if error.is_a? ActiveMerchant::Billing::Response
           text = error.params['message'] || error.params['response_reason_text'] || error.message
           if payment_method.is_a?(Spree::Gateway::AuthorizeNetCim)
-            rc = error.params['direct_response']['response_reason_code'].to_i
+            rc = error.params['direct_response']['response_reason_code'].to_i unless error.params['direct_response'].nil?
             text += ' Incorrect security code.' if rc == 64 || rc == 44 || rc == 45
           end
         elsif error.is_a? ActiveMerchant::ConnectionError
