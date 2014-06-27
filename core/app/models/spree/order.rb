@@ -311,6 +311,7 @@ module Spree
 
     def credit_cards
       credit_card_ids = payments.from_credit_card.pluck(:source_id).uniq
+      return [] unless credit_card_ids.any?
       CreditCard.where(id: credit_card_ids)
     end
 
