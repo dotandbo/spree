@@ -96,18 +96,13 @@ module Spree
     # paid          when +payment_total+ is equal to +total+
     # balance_due   when +payment_total+ is less than +total+
     # credit_owed   when +payment_total+ is greater than +total+
-    # failed        when most recent payment is in the failed state
     #
     # The +payment_state+ value helps with reporting, etc. since it provides a quick and easy way to locate Orders needing attention.
     def update_payment_state
 
       #line_item are empty when user empties cart
       if line_items.empty? || round_money(order.payment_total) < round_money(order.total)
-        if payments.present? && payments.last.state == 'failed'
-          order.payment_state = 'failed'
-        else
-          order.payment_state = 'balance_due'
-        end
+        order.payment_state = 'balance_due'
       elsif round_money(order.payment_total) > round_money(order.total)
         order.payment_state = 'credit_owed'
       else
