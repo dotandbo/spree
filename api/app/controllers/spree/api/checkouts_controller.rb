@@ -56,10 +56,10 @@ module Spree
         def object_params
           modify_payment_attributes params[:order] || {}
 
-          protected_params = if params[:order]
+          protected_params = if params[:order].present?
                                params.require(:order).permit(permitted_checkout_attributes)
                              else
-                               {}
+                                {}
                              end
 
           map_nested_attributes_keys Order, protected_params
