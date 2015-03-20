@@ -9,8 +9,10 @@ module Spree
         def self.supports_s3(field)
           # Load user defined paperclip settings
           config = Spree::Config
+          role = AWS::Core::CredentialProviders::DefaultProvider.new
+
           if config[:use_s3]
-            s3_creds = { :access_key_id => config[:s3_access_key], :secret_access_key => config[:s3_secret], :bucket => config[:s3_bucket] }
+            s3_creds = { :access_key_id => role.credentials[:access_key_id], :secret_access_key => role.credentials[:secret_access_key], :bucket => config[:s3_bucket] }
             self.attachment_definitions[field][:storage] = :s3
             self.attachment_definitions[field][:s3_credentials] = s3_creds
             self.attachment_definitions[field][:s3_headers] = ActiveSupport::JSON.decode(config[:s3_headers])
