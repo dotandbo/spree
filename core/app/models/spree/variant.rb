@@ -4,7 +4,7 @@ module Spree
 
     belongs_to :product, touch: true, class_name: 'Spree::Product'
 
-    delegate_belongs_to :product, :name, :description, :permalink, :available_on,
+    delegate_belongs_to :product, :name, :description, :slug, :available_on,
                         :tax_category_id, :shipping_category_id, :meta_description,
                         :meta_keywords, :tax_category, :shipping_category
 
