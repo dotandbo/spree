@@ -41,9 +41,9 @@ module Spree
 
       def load_product
         if try_spree_current_user.try(:has_spree_role?, "admin")
-          @product = Product.with_deleted.find_by_permalink!(params[:id])
+          @product = Product.with_deleted.friendly.find(params[:id])
         else
-          @product = Product.active(current_currency).find_by_permalink!(params[:id])
+          @product = Product.active(current_currency).friendly.find(params[:id])
         end
       end
 
