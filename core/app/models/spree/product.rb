@@ -21,7 +21,7 @@
 module Spree
   class Product < ActiveRecord::Base
     extend FriendlyId
-    friendly_id :slug_candidates, use: :slugged
+    friendly_id :slug_candidates, use: [:slugged, :history]
 
     acts_as_paranoid
     has_many :product_option_types, dependent: :destroy, inverse_of: :product
@@ -40,7 +40,7 @@ module Spree
       -> { where is_master: true },
       inverse_of: :product,
       class_name: 'Spree::Variant'
-      
+
     has_many :variants,
       -> { where(is_master: false).order("#{::Spree::Variant.quoted_table_name}.position ASC") },
       inverse_of: :product,
