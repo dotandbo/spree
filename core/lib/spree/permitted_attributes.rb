@@ -77,7 +77,7 @@ module Spree
     @@source_attributes = [
       :number, :month, :year, :expiry, :verification_value,
       :first_name, :last_name, :cc_type, :gateway_customer_profile_id,
-      :gateway_payment_profile_id, :last_digits, :name, :encrypted_data]
+      :gateway_payment_profile_id, :last_digits, :name, :encrypted_data, :token, :card_id, :address_id]
 
     @@stock_item_attributes = [:variant, :stock_location, :backorderable, :variant_id]
 

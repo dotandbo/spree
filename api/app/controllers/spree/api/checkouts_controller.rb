@@ -47,6 +47,19 @@ module Spree
       end
 
       private
+
+        def object_params
+          modify_payment_attributes params[:order] || {}
+
+          protected_params = if params[:order].present?
+                               params.require(:order).permit(permitted_checkout_attributes)
+                             else
+                               {}
+                             end
+
+          map_nested_attributes_keys Order, protected_params
+        end
+
         def user_id
           params[:order][:user_id] if params[:order]
         end

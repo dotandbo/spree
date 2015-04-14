@@ -1,3 +1,5 @@
 object @variant
-cache [I18n.locale, @current_user_roles.include?('admin'), 'show', root_object]
-extends "spree/api/variants/big"
+cache @variant
+extends "spree/api/variants/variant"
+child(:option_values => :option_values) { attributes *option_value_attributes }
+child(:images => :images) { extends "spree/api/images/show" }
