@@ -21,7 +21,8 @@
 module Spree
   class Product < Spree::Base
     extend FriendlyId
-    friendly_id :slug_candidates, use: :history
+    
+    friendly_id :slug_candidates, use: [:slugged, :history]
 
     acts_as_paranoid
 
