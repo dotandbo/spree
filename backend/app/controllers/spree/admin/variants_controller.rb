@@ -1,7 +1,7 @@
 module Spree
   module Admin
     class VariantsController < ResourceController
-      belongs_to 'spree/product', :find_by => :permalink
+      belongs_to 'spree/product', :find_by => :slug
       new_action.before :new_before
 
       # override the destory method to set deleted_at value
