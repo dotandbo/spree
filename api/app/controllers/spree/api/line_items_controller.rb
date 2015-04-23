@@ -51,7 +51,9 @@ module Spree
         end
 
         def line_item_params
-          params.require(:line_item).permit(:quantity, :variant_id)
+          whitelisted_params = [:quantity, :variant_id]
+          whitelisted_params += [:price, :estimated_ship_date] if current_api_user.admin?
+          params.require(:line_item).permit whitelisted_params
         end
     end
   end
