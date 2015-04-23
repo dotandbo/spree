@@ -100,6 +100,7 @@ module Spree
         payment_state: order.payment_state,
         shipment_state: order.shipment_state,
         item_total: order.item_total,
+        tax_total: order.additional_tax_total + order.included_tax_total,
         item_count: order.item_count,
         adjustment_total: order.adjustment_total,
         included_tax_total: order.included_tax_total,
