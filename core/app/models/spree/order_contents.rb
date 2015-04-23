@@ -78,6 +78,13 @@ module Spree
           line_item = order.line_items.new(quantity: quantity,
                                             variant: variant,
                                             options: opts)
+          line_item.target_shipment = shipment
+          if currency
+            line_item.currency = currency
+            line_item.price    = variant.price_in(currency).amount
+          else
+            line_item.price    = variant.price
+          end
         end
         line_item.target_shipment = options[:shipment] if options.has_key? :shipment
         line_item.save!
