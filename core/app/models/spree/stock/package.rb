@@ -98,7 +98,6 @@ module Spree
 
       def to_shipment
         shipment = Spree::Shipment.new
-        shipment.address = order.ship_address
         shipment.order = order
         shipment.stock_location = stock_location
         shipment.shipping_rates = shipping_rates
