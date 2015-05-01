@@ -64,7 +64,7 @@ module Spree
     end
 
     def update_order_total
-      order.total = order.item_total + order.shipment_total + order.adjustment_total
+      order.total = order.item_total + order.ship_total + order.adjustment_total
     end
 
     def update_adjustment_total
@@ -78,7 +78,6 @@ module Spree
       order.promo_total = line_items.sum(:promo_total) +
                           shipments.sum(:promo_total) +
                           adjustments.promotion.eligible.sum(:amount)
-
       update_order_total
     end
 
