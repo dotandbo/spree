@@ -42,10 +42,11 @@ module Spree
         end
 
         def line_items_attributes
-          { line_items_attributes: {
-            id: params[:id],
-            quantity: params[:line_item][:quantity]
-          } }
+          whitelisted_params = [:quantity, :variant_id]
+          whitelisted_params += [:price, :estimated_ship_date] if current_api_user.admin?
+          li_attrs = params.require(:line_item).permit whitelisted_params
+          li_attrs[:id] = params[:id]
+          { line_items_attributes: li_attrs }
         end
 
         def line_item_params
