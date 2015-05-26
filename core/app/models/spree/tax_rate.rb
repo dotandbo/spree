@@ -162,7 +162,7 @@ module Spree
     # Creates necessary tax adjustments for the order.
     def adjust(order, item)
       amount = compute_amount(item)
-      return if amount == 0
+      return if amount == 0 or item.is_gift_card #Do not tax on gift cards
 
       included = included_in_price && default_zone_or_zone_match?(item)
 

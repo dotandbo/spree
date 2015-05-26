@@ -53,9 +53,27 @@ module Spree
     end
     alias subtotal amount
 
-    def discounted_amount
-      amount + promo_total
+
+    # A little hacky way to work around known issue on spree 2.2 https://github.com/spree/spree/issues/4760
+    # We want to spread order-level adjustment across line_items
+    # If there is order-level discount/promotions,
+    # Weigh it properly and spread the promotion across the line_items
+    def promo_amount
+      promo = order.promotions
+      return promo_total unless promo
+      order_total = order.line_items_total_without_gift_cards
+      return 0.0 unless order_total != 0.0
+      (order.promo_total * amount) / order_total
     end
+
+    def discounted_amount
+      return amount if self.is_gift_card #No discount for giftcards
+      amount + promo_amount #discounted_amount = original_amount + (promo_amount) where promoamount is neg. value
+    end
+
+    # def discounted_amount
+    #   amount + promo_total
+    # end
 
     def final_amount
       amount + adjustment_total.to_f
