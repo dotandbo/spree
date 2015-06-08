@@ -22,7 +22,7 @@ module Spree
           return if promotion_credit_exists?(order)
 
           amount = compute_amount(order)
-          return if amount == 0
+          return if amount == 0 && promotion.name != 'Employee Discount'
           Spree::Adjustment.create!(
             amount: amount,
             order: order,
