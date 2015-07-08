@@ -10,7 +10,7 @@ module Spree
 
     validates :name, presence: true
 
-    after_touch :touch_parent
+    #after_touch :touch_parent
 
     has_attached_file :icon,
       styles: { mini: '32x32>', normal: '128x128>' },
