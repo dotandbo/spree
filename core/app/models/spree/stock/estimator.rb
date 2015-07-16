@@ -18,7 +18,7 @@ module Spree
       private
       def choose_default_shipping_rate(shipping_rates)
         unless shipping_rates.empty?
-          shipping_rates.min_by(&:cost).selected = true
+          shipping_rates.max_by(&:shipping_method_id).selected = true
         end
       end
 
