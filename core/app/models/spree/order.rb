@@ -498,11 +498,12 @@ module Spree
     def create_proposed_shipments
       adjustments.shipping.delete_all
       shipments.destroy_all
-
+      Rails.logger.error "#{self.number} create_pro_shipment"
       packages = Spree::Stock::Coordinator.new(self).packages
       packages.each do |package|
         shipments << package.to_shipment
       end
+      Rails.logger.error "#{self.number} create_pro_shipment, #{packages}, #{shipments}"
 
       shipments
     end

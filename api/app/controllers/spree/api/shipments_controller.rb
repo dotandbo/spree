@@ -30,6 +30,7 @@ module Spree
         end
 
         @shipment.update_attributes_and_order(shipment_params)
+        Rails.logger.error "#{@order.number} updated shipment#{shipment.id} with #{shipment_params}"
         respond_with(@shipment.reload, default_template: :show)
       end
 
