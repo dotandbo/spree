@@ -124,11 +124,14 @@ module Spree
 
       self.shipping_rates = Stock::Estimator.new(order).shipping_rates(to_package)
 
+      Rails.logger.error "#{order.number} refresh rates on shipment_id #{self.id} with #{shipping_rates.to_a}"
+
       if shipping_method
         selected_rate = shipping_rates.detect { |rate|
           rate.shipping_method_id == original_shipping_method_id
         }
         self.selected_shipping_rate_id = selected_rate.id if selected_rate
+        Rails.logger.error "#{order.number} shipment_id #{self.id} updated selected_shipping_rate_id with #{self.selected_shipping_rate_id}}" if selected_rate
       end
 
       shipping_rates
@@ -284,6 +287,7 @@ module Spree
           adjustment_total: adjustments.additional.map(&:update!).compact.sum,
           updated_at: Time.now,
         )
+        Rails.logger.error "#{order.number} update_amount on shipment #{self.id} to #{selected_shipping_rate.cost}"
       end
     end
 

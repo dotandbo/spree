@@ -20,7 +20,7 @@ module Spree
       def update
         @shipment = Spree::Shipment.accessible_by(current_ability, :update).readonly(false).find_by!(number: params[:id])
         @shipment.update_attributes_and_order(shipment_params)
-
+        Rails.logger.error "#{@order.number} updated shipment#{shipment.id} with #{shipment_params}"
         respond_with(@shipment.reload, default_template: :show)
       end
 
