@@ -30,7 +30,7 @@ module Spree
     scope :trackable, -> { where("tracking IS NOT NULL AND tracking != ''") }
 
     # shipment state machine (see http://github.com/pluginaweek/state_machine/tree/master for details)
-    state_machine initial: :pending, use_transactions: false do
+    state_machine initial: :pending, use_transactions: true do
       event :ready do
         transition from: :pending, to: :ready, if: lambda { |shipment|
           # Fix for #2040
