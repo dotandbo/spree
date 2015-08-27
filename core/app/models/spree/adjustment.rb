@@ -22,7 +22,7 @@
 # it might be reinstated.
 module Spree
   class Adjustment < Spree::Base
-    belongs_to :adjustable, polymorphic: true, touch: true
+    belongs_to :adjustable, polymorphic: true, touch: false
     belongs_to :source, polymorphic: true
     belongs_to :order, class_name: "Spree::Order"
 
@@ -40,7 +40,7 @@ module Spree
         transition from: :closed, to: :open
       end
     end
-
+    before_save :touch_parent
     after_create :update_adjustable_adjustment_total
     after_destroy :update_adjustable_adjustment_total
 
@@ -104,6 +104,10 @@ module Spree
     def update_adjustable_adjustment_total
       # Cause adjustable's total to be recalculated
       ItemAdjustments.new(adjustable).update
+    end
+
+    def touch_parent
+      adjustable.try(:touch) if changed?
     end
 
   end

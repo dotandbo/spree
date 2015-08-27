@@ -2,7 +2,7 @@ module Spree
   class Variant < Spree::Base
     acts_as_paranoid
 
-    belongs_to :product, touch: true, class_name: 'Spree::Product', inverse_of: :variants
+    belongs_to :product, class_name: 'Spree::Product', inverse_of: :variants
     belongs_to :tax_category, class_name: 'Spree::TaxCategory'
 
     delegate_belongs_to :product, :name, :description, :slug, :available_on,
@@ -41,6 +41,7 @@ module Spree
     validates :price,      numericality: { greater_than_or_equal_to: 0, allow_nil: true }
     validates_uniqueness_of :sku, allow_blank: true, conditions: -> { where(deleted_at: nil) }
 
+    before_save :touch_parent
     after_save :save_default_price
 
     after_create :create_stock_items
@@ -237,6 +238,10 @@ module Spree
 
       def clear_in_stock_cache
         Rails.cache.delete(in_stock_cache_key)
+      end
+
+      def touch_parent
+        product.touch if changed?
       end
   end
 end

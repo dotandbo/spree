@@ -2,7 +2,7 @@ require 'ostruct'
 
 module Spree
   class Shipment < Spree::Base
-    belongs_to :order, class_name: 'Spree::Order', touch: true, inverse_of: :shipments
+    belongs_to :order, class_name: 'Spree::Order', touch: false, inverse_of: :shipments
     belongs_to :address, class_name: 'Spree::Address', inverse_of: :shipments
     belongs_to :stock_location, class_name: 'Spree::StockLocation'
 
@@ -11,7 +11,7 @@ module Spree
     has_many :state_changes, as: :stateful
     has_many :inventory_units, dependent: :delete_all, inverse_of: :shipment
     has_many :adjustments, as: :adjustable, dependent: :delete_all
-
+    before_save :touch_parent
     after_save :update_adjustments
 
     before_validation :set_cost_zero_when_nil
@@ -372,6 +372,10 @@ module Spree
 
       def can_get_rates?
         order.ship_address && order.ship_address.valid?
+      end
+
+      def touch_parent
+        order.touch if changed?
       end
   end
 end
