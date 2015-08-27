@@ -1,7 +1,7 @@
 module Spree
   class LineItem < Spree::Base
     before_validation :adjust_quantity
-    belongs_to :order, class_name: "Spree::Order", inverse_of: :line_items, touch: true
+    belongs_to :order, class_name: "Spree::Order", inverse_of: :line_items, touch: false
     belongs_to :variant, class_name: "Spree::Variant", inverse_of: :line_items
     belongs_to :tax_category, class_name: "Spree::TaxCategory"
 
@@ -25,7 +25,7 @@ module Spree
     validate :ensure_proper_currency
     before_destroy :update_inventory
     before_destroy :destroy_inventory_units
-
+    before_save :touch_parent
     after_save :update_inventory
     after_save :update_adjustments
 
@@ -144,6 +144,10 @@ module Spree
         unless currency == order.currency
           errors.add(:currency, :must_match_order_currency)
         end
+      end
+
+      def touch_parent
+        order.touch if changed?
       end
   end
 end
