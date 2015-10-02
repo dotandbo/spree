@@ -4,6 +4,8 @@ module Spree
       attr_reader :order
       attr_accessor :error, :success
 
+      self.whitelisted_ransackable_attributes = %w[user_id]
+
       def initialize(order)
         @order = order
       end
