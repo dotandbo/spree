@@ -14,7 +14,11 @@ module Spree
         end
 
         def template
-          options[:default_template]
+          if controller.current_api_user.try(:admin?)
+            request.headers['X-Spree-Template'] || controller.params[:template] || options[:default_template]
+          else
+            options[:default_template]
+          end
         end
 
         def api_behavior(error)
