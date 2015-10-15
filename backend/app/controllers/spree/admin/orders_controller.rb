@@ -31,6 +31,8 @@ module Spree
         if @show_only_completed
           params[:q][:completed_at_gt] = params[:q].delete(:created_at_gt)
           params[:q][:completed_at_lt] = params[:q].delete(:created_at_lt)
+        else
+          params[:q][:completed_at_not_null] = nil
         end
 
         @search = Order.accessible_by(current_ability, :index).ransack(params[:q])
