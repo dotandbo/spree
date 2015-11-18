@@ -58,6 +58,9 @@ module Spree
     end
 
     private
+      def verify_count_on_hand?
+        count_on_hand_changed? && !backorderable? && (count_on_hand < count_on_hand_was) && (count_on_hand < 0)
+      end
 
       def count_on_hand=(value)
         write_attribute(:count_on_hand, value)
