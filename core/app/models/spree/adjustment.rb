@@ -86,7 +86,7 @@ module Spree
     # Chances are likely that this was a manually created adjustment in the admin backend.
     def update!(target = nil)
       return amount if closed?
-      if source.present?
+      if source.present? && (target || adjustable).present?
         amount = source.compute_amount(target || adjustable)
         self.update_columns(
           amount: amount,
