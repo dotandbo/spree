@@ -26,10 +26,10 @@ module Spree
           promotion.update_column(:code, "code")
         end
 
-        it "does not adjust the shipment" do
+        it "still adjusts the shipment" do
           expect {
             subject.activate
-          }.to_not change { shipment.adjustments.count }
+          }.to change { shipment.adjustments.count }.by(1)
         end
       end
 
