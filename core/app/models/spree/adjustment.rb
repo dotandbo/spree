@@ -87,14 +87,13 @@ module Spree
     def update!(target = nil)
       return amount if closed?
       if source.present? && (target || adjustable).present?
-        amount = source.compute_amount(target || adjustable)
+        is_eligible = promotion? ? source.promotion.eligible?(adjustable) : eligible
+        new_amount = is_eligible ? source.compute_amount(target || adjustable) : 0
         self.update_columns(
-          amount: amount,
+          eligible: is_eligible,
+          amount: new_amount,
           updated_at: Time.now,
         )
-        if promotion?
-          self.update_column(:eligible, source.promotion.eligible?(adjustable))
-        end
       end
       amount
     end
