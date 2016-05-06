@@ -41,7 +41,7 @@ module Spree
       -> { where is_master: true },
       inverse_of: :product,
       class_name: 'Spree::Variant'
-      
+
     has_many :variants,
       -> { where(is_master: false).order("#{::Spree::Variant.quoted_table_name}.position ASC") },
       inverse_of: :product,
@@ -78,9 +78,9 @@ module Spree
     after_initialize :ensure_master
 
     after_save :save_master
-    after_save :run_touch_callbacks, if: :anything_changed?
+    #after_save :run_touch_callbacks, if: :anything_changed?
     after_save :reset_nested_changes
-    after_touch :touch_taxons
+    #after_touch :touch_taxons
 
     before_validation :normalize_slug, on: :update
     before_validation :validate_master

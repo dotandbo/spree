@@ -25,7 +25,7 @@ module Spree
     validate :ensure_proper_currency
     before_destroy :update_inventory
     before_destroy :destroy_inventory_units
-    before_save :touch_parent
+    #before_save :touch_parent
     after_save :update_inventory
     after_save :update_adjustments
 
@@ -130,7 +130,7 @@ module Spree
 
       def update_adjustments
         if quantity_changed?
-          update_tax_charge # Called to ensure pre_tax_amount is updated. 
+          update_tax_charge # Called to ensure pre_tax_amount is updated.
           recalculate_adjustments
         end
       end

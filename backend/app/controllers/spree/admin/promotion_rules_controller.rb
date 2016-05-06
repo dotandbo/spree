@@ -38,7 +38,7 @@ class Spree::Admin::PromotionRulesController < Spree::Admin::BaseController
   end
 
   def validate_promotion_rule_type
-    valid_promotion_rule_types = Rails.application.config.spree.promotions.rules.map(&:to_s)
+    valid_promotion_rule_types = Rails.application.config.spree.promotions.rules.map(&:to_s).uniq()
     if !valid_promotion_rule_types.include?(params[:promotion_rule][:type])
       flash[:error] = Spree.t(:invalid_promotion_rule)
       respond_to do |format|

@@ -9,7 +9,7 @@ module Spree
 
     scope :sorted, -> { order(:name) }
 
-    after_touch :touch_all_products
+    #after_touch :touch_all_products
 
     self.whitelisted_ransackable_attributes = ['presentation']
 

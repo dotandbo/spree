@@ -40,7 +40,7 @@ module Spree
         transition from: :closed, to: :open
       end
     end
-    before_save :touch_parent
+    #before_save :touch_parent
     after_create :update_adjustable_adjustment_total
     after_destroy :update_adjustable_adjustment_total
 
@@ -87,7 +87,7 @@ module Spree
     def update!(target = nil)
       return amount if closed?
       if source.present? && (target || adjustable).present?
-        is_eligible = promotion? ? source.promotion.eligible?(adjustable) : true
+        is_eligible = promotion? ? source.promotion.eligible?(target || adjustable) : true
         new_amount = is_eligible ? source.compute_amount(target || adjustable) : 0
         self.update_columns(
           eligible: is_eligible,
