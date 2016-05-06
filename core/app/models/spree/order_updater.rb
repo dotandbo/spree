@@ -15,6 +15,12 @@ module Spree
     # object with callbacks (otherwise you will end up in an infinite recursion as the
     # associations try to save and then in turn try to call +update!+ again.)
     def update
+      Rails.logger.debug("-------------------------------------------------")
+      Rails.logger.debug("-------------------------------------------------")
+      Rails.logger.debug("Spree::OrderUpdater - update")
+      Rails.logger.debug("-------------------------------------------------")
+      Rails.logger.debug("-------------------------------------------------")
+
       update_totals
       if order.completed?
         update_payment_state
@@ -26,10 +32,21 @@ module Spree
     end
 
     def run_hooks
+      Rails.logger.debug("-------------------------------------------------")
+      Rails.logger.debug("-------------------------------------------------")
+      Rails.logger.debug("Spree::OrderUpdater - run_hooks")
+      Rails.logger.debug("-------------------------------------------------")
+      Rails.logger.debug("-------------------------------------------------")
       update_hooks.each { |hook| order.send hook }
     end
 
     def recalculate_adjustments
+      Rails.logger.debug("-------------------------------------------------")
+      Rails.logger.debug("-------------------------------------------------")
+      Rails.logger.debug("Spree::OrderUpdater - recalculate_adjustments")
+      Rails.logger.debug("-------------------------------------------------")
+      Rails.logger.debug("-------------------------------------------------")
+
       all_adjustments.includes(:adjustable).map(&:adjustable).uniq.each { |adjustable| Spree::ItemAdjustments.new(adjustable).update }
     end
 
@@ -41,6 +58,12 @@ module Spree
     # +promo_total+        The total value of all promotion adjustments
     # +total+              The so-called "order total."  This is equivalent to +item_total+ plus +adjustment_total+.
     def update_totals
+      Rails.logger.debug("-------------------------------------------------")
+      Rails.logger.debug("-------------------------------------------------")
+      Rails.logger.debug("Spree::OrderUpdater - update_totals")
+      Rails.logger.debug("-------------------------------------------------")
+      Rails.logger.debug("-------------------------------------------------")
+
       update_payment_total
       update_item_total
       update_shipment_total
@@ -50,6 +73,12 @@ module Spree
 
     # give each of the shipments a chance to update themselves
     def update_shipments
+      Rails.logger.debug("-------------------------------------------------")
+      Rails.logger.debug("-------------------------------------------------")
+      Rails.logger.debug("Spree::OrderUpdater - update_shipments")
+      Rails.logger.debug("-------------------------------------------------")
+      Rails.logger.debug("-------------------------------------------------")
+
       shipments.each do |shipment|
         next unless shipment.persisted?
         shipment.update!(order)
@@ -59,19 +88,43 @@ module Spree
     end
 
     def update_payment_total
+      Rails.logger.debug("-------------------------------------------------")
+      Rails.logger.debug("-------------------------------------------------")
+      Rails.logger.debug("Spree::OrderUpdater - update_payment_total")
+      Rails.logger.debug("-------------------------------------------------")
+      Rails.logger.debug("-------------------------------------------------")
+
       order.payment_total = payments.completed.sum(:amount)
     end
 
     def update_shipment_total
+      Rails.logger.debug("-------------------------------------------------")
+      Rails.logger.debug("-------------------------------------------------")
+      Rails.logger.debug("Spree::OrderUpdater - update_shipment_total")
+      Rails.logger.debug("-------------------------------------------------")
+      Rails.logger.debug("-------------------------------------------------")
+
       order.shipment_total = shipments.sum(:cost)
       update_order_total
     end
 
     def update_order_total
+      Rails.logger.debug("-------------------------------------------------")
+      Rails.logger.debug("-------------------------------------------------")
+      Rails.logger.debug("Spree::OrderUpdater - update_order_total")
+      Rails.logger.debug("-------------------------------------------------")
+      Rails.logger.debug("-------------------------------------------------")
+
       order.total = order.item_total + order.ship_total + order.adjustment_total
     end
 
     def update_adjustment_total
+      Rails.logger.debug("-------------------------------------------------")
+      Rails.logger.debug("-------------------------------------------------")
+      Rails.logger.debug("Spree::OrderUpdater - update_adjustment_total")
+      Rails.logger.debug("-------------------------------------------------")
+      Rails.logger.debug("-------------------------------------------------")
+
       recalculate_adjustments
       order.adjustment_total = line_items.sum(:adjustment_total) +
                                shipments.sum(:adjustment_total)  +
@@ -86,15 +139,33 @@ module Spree
     end
 
     def update_item_count
+      Rails.logger.debug("-------------------------------------------------")
+      Rails.logger.debug("-------------------------------------------------")
+      Rails.logger.debug("Spree::OrderUpdater - update_item_count")
+      Rails.logger.debug("-------------------------------------------------")
+      Rails.logger.debug("-------------------------------------------------")
+
       order.item_count = quantity
     end
 
     def update_item_total
+      Rails.logger.debug("-------------------------------------------------")
+      Rails.logger.debug("-------------------------------------------------")
+      Rails.logger.debug("Spree::OrderUpdater - update_item_total")
+      Rails.logger.debug("-------------------------------------------------")
+      Rails.logger.debug("-------------------------------------------------")
+
       order.item_total = line_items.sum('price * quantity')
       update_order_total
     end
 
     def persist_totals
+      Rails.logger.debug("-------------------------------------------------")
+      Rails.logger.debug("-------------------------------------------------")
+      Rails.logger.debug("Spree::OrderUpdater - persist_totals")
+      Rails.logger.debug("-------------------------------------------------")
+      Rails.logger.debug("-------------------------------------------------")
+
       order.update_columns(
         payment_state: order.payment_state,
         shipment_state: order.shipment_state,
@@ -122,6 +193,12 @@ module Spree
     #
     # The +shipment_state+ value helps with reporting, etc. since it provides a quick and easy way to locate Orders needing attention.
     def update_shipment_state
+      Rails.logger.debug("-------------------------------------------------")
+      Rails.logger.debug("-------------------------------------------------")
+      Rails.logger.debug("Spree::OrderUpdater - update_shipment_state")
+      Rails.logger.debug("-------------------------------------------------")
+      Rails.logger.debug("-------------------------------------------------")
+
       if order.backordered?
         order.shipment_state = 'backorder'
       else
@@ -154,6 +231,12 @@ module Spree
     #
     # The +payment_state+ value helps with reporting, etc. since it provides a quick and easy way to locate Orders needing attention.
     def update_payment_state
+      Rails.logger.debug("-------------------------------------------------")
+      Rails.logger.debug("-------------------------------------------------")
+      Rails.logger.debug("Spree::OrderUpdater - update_payment_state")
+      Rails.logger.debug("-------------------------------------------------")
+      Rails.logger.debug("-------------------------------------------------")
+
       last_state = order.payment_state
       if payments.present? && payments.last.state == 'failed'
         order.payment_state = 'failed'
@@ -170,6 +253,12 @@ module Spree
 
     private
       def round_money(n)
+        Rails.logger.debug("-------------------------------------------------")
+        Rails.logger.debug("-------------------------------------------------")
+        Rails.logger.debug("Spree::OrderUpdater - round_money")
+        Rails.logger.debug("-------------------------------------------------")
+        Rails.logger.debug("-------------------------------------------------")
+
         (n * 100).round / 100.0
       end
   end
