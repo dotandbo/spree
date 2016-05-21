@@ -29,7 +29,7 @@ module Spree
     scope :with_state, ->(*s) { where(state: s) }
     scope :trackable, -> { where("tracking IS NOT NULL AND tracking != ''") }
 
-    delegate :item_total, to: :order
+    delegate :item_total, :shipping_address, to: :order
 
     # shipment state machine (see http://github.com/pluginaweek/state_machine/tree/master for details)
     state_machine initial: :pending, use_transactions: true do
