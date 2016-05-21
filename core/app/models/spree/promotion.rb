@@ -64,7 +64,7 @@ module Spree
       if action_taken
       # connect to the order
       # create the join_table entry.
-        self.orders << order
+        self.orders << order unless orders.include?(order)
         self.save
       end
 
