@@ -65,6 +65,18 @@ module Spree
         order.promotions.include? promotion
       end
 
+      def promotion_applied_to_order?
+        order.promotions.with_coupon_code(order.coupon_code)
+      end
+
+      def promotion_is_for_free_shipping?
+        promotion.actions.first.type == 'Spree::Promotion::Actions::FreeShipping'
+      end
+
+      def new_shipping_promotion_applied_to_shipment_free_order?
+        promotion_applied_to_order? && promotion_is_for_free_shipping? && order.shipments.empty?
+      end
+
       def determine_promotion_application_result
         detector = lambda { |p|
           if p.source.promotion.code
@@ -79,8 +91,7 @@ module Spree
 
         # Check for applied line items.
         created_line_items = promotion.actions.detect { |a| a.type == 'Spree::Promotion::Actions::CreateLineItems' }
-
-        if (discount && discount.eligible) || created_line_items
+        if (discount && discount.eligible) || created_line_items || new_shipping_promotion_applied_to_shipment_free_order?
           order.update_totals
           order.persist_totals
           self.success = Spree.t(:coupon_code_applied)
