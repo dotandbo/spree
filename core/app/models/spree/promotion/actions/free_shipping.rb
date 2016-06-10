@@ -8,7 +8,7 @@ module Spree
           return true if promotion_credit_exists?(order)
           order.adjustments.create!(
             order: order,
-            amount: compute_amount(order.shipments.first),
+            amount: compute_amount(order),
             originator_type: "Spree::ShippingMethod",
             source: self,
             label: label,
@@ -20,8 +20,8 @@ module Spree
           "Promotion: " + (promotion.code ? "Free Shipping (#{promotion.code})" : "#{promotion.name}")
         end
 
-        def compute_amount(shipment)
-          shipment.cost * -1
+        def compute_amount(order)
+          order.shipments.try(:first).try(:cost) * -1
         end
 
         private
