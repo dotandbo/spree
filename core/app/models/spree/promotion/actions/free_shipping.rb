@@ -10,7 +10,7 @@ module Spree
             order: order,
             amount: compute_amount(order),
             originator_type: "Spree::ShippingMethod",
-            source: self,
+            source: promotion,
             label: label,
           )
           true
@@ -27,7 +27,7 @@ module Spree
         private
 
         def promotion_credit_exists?(order)
-          order.adjustments.where(:source_id => self.id).exists?
+          order.adjustments.exists(source_id: promotion.id)
         end
       end
     end
