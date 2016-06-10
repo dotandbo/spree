@@ -5,23 +5,19 @@ module Spree
         def perform(payload={})
           order = payload[:order]
           return true if order.shipments.empty?
-          results = order.shipments.map do |shipment|
-            return true if promotion_credit_exists?(shipment)
-            shipment.adjustments.create!(
-              order: shipment.order,
-              amount: compute_amount(shipment),
-              source: self,
-              label: label,
-            )
-            true
-          end
-          # Did we actually end up applying any adjustments?
-          # If so, then this action should be classed as 'successful'
-          results.any? { |r| r == true }
+          return true if promotion_credit_exists?(order)
+          order.adjustments.create!(
+            order: order,
+            amount: compute_amount(order.shipments.first),
+            originator_type: "Spree::ShippingMethod",
+            source: self,
+            label: label,
+          )
+          true
         end
 
         def label
-          "#{Spree.t(:promotion)} (#{promotion.name})"
+          "Promotion: " + (promotion.code ? "Free Shipping (#{promotion.code})" : "#{promotion.name}")
         end
 
         def compute_amount(shipment)
@@ -30,8 +26,8 @@ module Spree
 
         private
 
-        def promotion_credit_exists?(shipment)
-          shipment.adjustments.where(:source_id => self.id).exists?
+        def promotion_credit_exists?(order)
+          order.adjustments.where(:source_id => self.id).exists?
         end
       end
     end
