@@ -21,7 +21,7 @@ module Spree
         end
 
         def compute_amount(order)
-          order.shipments.try(:first).try(:cost) * -1
+          BigDecimal(order.shipments.try(:first).try(:cost).to_s) * -1
         end
 
         private
